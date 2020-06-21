@@ -42,7 +42,57 @@ function turnClick(square) {
 }
 
 function bestPos() {
-  return emptySquaresfun()[0];
+  return minimax(board,ai).index;
+}
+
+function minimax(newBoard,player){
+  var spots = emptySquaresfun(newBoard);
+  if(checkWin(newBoard,human)){
+    return {score:-10};
+  }
+  else if (checkWin(newBoard,ai)){
+    return {score:20};
+  }
+  else if(spots.length === 0){
+    return { score:0 };
+  }
+  var moves = [];
+  for(var i = 0;i<spots.length;i++){
+      var move = {};
+      move.index = newBoard[spots[i]];
+      newBoard[spots[i]] = player;
+
+      if(player === ai){
+        var result = minimax(newBoard,human);
+        move.score = result.score;
+      }else{
+        var result = minimax(newBoard,ai);
+        move.score = result.score;
+      }
+      newBoard[spots[i]] = move.index;
+      moves.push(move);   
+  }
+
+  var bestPlay;
+  if(player === ai){
+    var maxScore = -10000;
+    for(var i = 0;i<moves.length;i++){
+      if(moves[i].score > maxScore){
+        maxScore = moves[i].score;
+        bestPlay = i;
+      }
+    }
+  }else {
+    var maxScore = 10000;
+    for(var i = 0;i<moves.length;i++){
+      if(moves[i].score < maxScore){
+        maxScore = moves[i].score;
+        bestPlay = i;
+      }
+    }
+
+  }
+  return moves[bestPlay];
 }
 
 function emptySquaresfun() {
